@@ -99,14 +99,13 @@
             margin: -5px 0 10px 0;
             display: none;
         }
-        /* ZMIANA: Kontener wyników jest teraz widoczny domyślnie */
         #results {
             margin-top: 25px;
             padding: 20px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
         }
-        /* ZMIANA: Ukryty jest tylko główny komunikat, a nie cała sekcja */
+        /* ZMIANA: Pole jest zawsze 'obecne', ale domyślnie niewidoczne */
         .result-message {
             text-align: center;
             font-size: 1.3em;
@@ -114,10 +113,21 @@
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 15px;
-            display: none; /* Ukryty domyślnie */
+            visibility: hidden; /* Niewidoczne, ale zajmuje miejsce */
+            min-height: 27px; /* Minimalna wysokość, aby uniknąć 'skakania' */
         }
-        .result-message.success { background-color: #e0f2f1; color: var(--success-color); border: 1px solid var(--success-color); }
-        .result-message.failure { background-color: #fff1ee; color: var(--error-color); border: 1px solid var(--error-color); }
+        .result-message.success { 
+            background-color: #e0f2f1; 
+            color: var(--success-color); 
+            border: 1px solid var(--success-color); 
+            visibility: visible; /* Staje się widoczne */
+        }
+        .result-message.failure { 
+            background-color: #fff1ee; 
+            color: var(--error-color); 
+            border: 1px solid var(--error-color); 
+            visibility: visible; /* Staje się widoczne */
+        }
         .result-details p {
             display: flex;
             justify-content: space-between;
@@ -236,8 +246,7 @@
         </form>
 
         <div id="results">
-            <div id="result-message" class="result-message">
-                </div>
+            <div id="result-message" class="result-message">&nbsp;</div>
             <div class="result-details">
                 <p>
                     <span class="result-label">Obliczony współczynnik temperaturowy (f<sub>Rsi</sub>):</span>
@@ -253,7 +262,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             
-            // ... (cała logika dla list rozwijanych pozostaje bez zmian)
             const rsiContainer = document.getElementById('rsi_select_container');
             const rsiTrigger = document.getElementById('rsi_value_trigger');
             const rsiOptions = document.getElementById('rsi_options');
@@ -291,7 +299,6 @@
                 if (!humidityContainer.contains(e.target)) humidityOptions.classList.remove('open');
             });
             
-            // ... (cała logika obliczeniowa pozostaje bez zmian)
             const vaporPressureData = [
                 [-20, 1.03], [-19, 1.14], [-18, 1.25], [-17, 1.37], [-16, 1.50], [-15, 1.65], [-14, 1.81], [-13, 1.98], [-12, 2.17], [-11, 2.37], [-10, 2.60], [-9, 2.84], [-8, 3.10], [-7, 3.37], [-6, 3.68], [-5, 4.01], [-4, 4.37], [-3, 4.76], [-2, 5.17], [-1, 5.62], [0, 6.11], [1, 6.57], [2, 7.05], [3, 7.59], [4, 8.13], [5, 8.72], [6, 9.35], [7, 10.02], [8, 10.73], [9, 11.48], [10, 12.28], [11, 13.12], [12, 14.03], [13, 14.98], [14, 15.99], [15, 17.06], [16, 18.18], [17, 19.37], [18, 20.65], [19, 21.97], [20, 23.40], [21, 24.87], [22, 26.45], [23, 28.10], [24, 29.85], [25, 31.69], [26, 33.62], [27, 35.66], [28, 37.81], [29, 40.06], [30, 42.44]
             ];
@@ -336,7 +343,7 @@
 
             function performCalculation() {
                 // ZMIANA: Ukrywamy stary komunikat i resetujemy wartości przed nowymi obliczeniami
-                document.getElementById('result-message').style.display = 'none';
+                document.getElementById('result-message').style.visibility = 'hidden';
                 errorMessageP.style.display = 'none';
                 document.getElementById('frsi-result').textContent = '--';
                 document.getElementById('frsi-min-result').textContent = '--';
@@ -391,8 +398,8 @@
                     messageDiv.textContent = "Warunek niespełniony: Istnieje ryzyko kondensacji i rozwoju pleśni!";
                     messageDiv.classList.add('failure');
                 }
-                // ZMIANA: Pokazujemy tylko komunikat, reszta jest już widoczna
-                messageDiv.style.display = 'block';
+                // ZMIANA: Pokazujemy pole, które wcześniej było niewidoczne
+                messageDiv.style.visibility = 'visible';
             }
 
             document.getElementById('calculate-btn').addEventListener('click', performCalculation);
