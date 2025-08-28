@@ -105,7 +105,6 @@
             border-radius: 8px;
             border: 1px solid var(--border-color);
         }
-        /* ZMIANA: Pole jest zawsze 'obecne', ale domyślnie niewidoczne */
         .result-message {
             text-align: center;
             font-size: 1.3em;
@@ -113,20 +112,23 @@
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 15px;
-            visibility: hidden; /* Niewidoczne, ale zajmuje miejsce */
-            min-height: 27px; /* Minimalna wysokość, aby uniknąć 'skakania' */
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+        /* ZMIANA: Nowy styl dla pola przed obliczeniami */
+        .result-message.placeholder {
+            background-color: var(--background-color);
+            color: #999;
+            border: 1px dashed var(--border-color);
         }
         .result-message.success { 
             background-color: #e0f2f1; 
             color: var(--success-color); 
             border: 1px solid var(--success-color); 
-            visibility: visible; /* Staje się widoczne */
         }
         .result-message.failure { 
             background-color: #fff1ee; 
             color: var(--error-color); 
             border: 1px solid var(--error-color); 
-            visibility: visible; /* Staje się widoczne */
         }
         .result-details p {
             display: flex;
@@ -246,7 +248,7 @@
         </form>
 
         <div id="results">
-            <div id="result-message" class="result-message">&nbsp;</div>
+            <div id="result-message" class="result-message placeholder">Sprawdzenie warunku</div>
             <div class="result-details">
                 <p>
                     <span class="result-label">Obliczony współczynnik temperaturowy (f<sub>Rsi</sub>):</span>
@@ -342,8 +344,12 @@
             }
 
             function performCalculation() {
-                // ZMIANA: Ukrywamy stary komunikat i resetujemy wartości przed nowymi obliczeniami
-                document.getElementById('result-message').style.visibility = 'hidden';
+                // ZMIANA: Resetujemy pole do stanu początkowego
+                const messageDiv = document.getElementById('result-message');
+                messageDiv.classList.remove('success', 'failure');
+                messageDiv.classList.add('placeholder');
+                messageDiv.textContent = 'Sprawdzenie warunku';
+                
                 errorMessageP.style.display = 'none';
                 document.getElementById('frsi-result').textContent = '--';
                 document.getElementById('frsi-min-result').textContent = '--';
@@ -390,7 +396,10 @@
                 frsiResultSpan.textContent = f_Rsi.toFixed(2);
                 frsiMinResultSpan.textContent = f_Rsi_min.toFixed(2);
                 
+                // ZMIANA: Usuwamy klasę 'placeholder' i dodajemy klasę wyniku
+                messageDiv.classList.remove('placeholder');
                 messageDiv.classList.remove('success', 'failure');
+
                 if (f_Rsi >= f_Rsi_min) {
                     messageDiv.textContent = "Warunek spełniony: Ryzyko rozwoju pleśni jest minimalne.";
                     messageDiv.classList.add('success');
@@ -398,8 +407,6 @@
                     messageDiv.textContent = "Warunek niespełniony: Istnieje ryzyko kondensacji i rozwoju pleśni!";
                     messageDiv.classList.add('failure');
                 }
-                // ZMIANA: Pokazujemy pole, które wcześniej było niewidoczne
-                messageDiv.style.visibility = 'visible';
             }
 
             document.getElementById('calculate-btn').addEventListener('click', performCalculation);
